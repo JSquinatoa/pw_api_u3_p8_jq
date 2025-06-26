@@ -42,13 +42,13 @@ public class EstudianteController {
 
     @PUT
     @Path("/{id}")
-    public void actulizar(@RequestBody Estudiante estudiante, @PathParam("id") Integer id ){
+    public void actualizar(@RequestBody Estudiante estudiante, @PathParam("id") Integer id ){
 
     }
 
     @PATCH
     @Path("/{id}")
-    public void actulizarparcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id){
+    public void actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id){
 
     }
     
