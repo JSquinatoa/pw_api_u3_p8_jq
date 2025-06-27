@@ -11,7 +11,7 @@ import uce.edu.web.api.repository.modelo.Estudiante;
 
 @Transactional
 @ApplicationScoped
-public class EstudianteRepoImpl implements IEstudianteRepo{
+public class EstudianteRepoImpl implements IEstudianteRepo {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -25,6 +25,26 @@ public class EstudianteRepoImpl implements IEstudianteRepo{
     public List<Estudiante> seleccionarTodos() {
         TypedQuery<Estudiante> myQuery = this.entityManager.createQuery("SELECT e FROM Estudiante e", Estudiante.class);
         return myQuery.getResultList();
+    }
+
+    @Override
+    public void actualizarPorId(Estudiante estudiante) {
+        this.entityManager.merge(estudiante);
+    }
+
+    @Override
+    public void actualizarParcialPorId(Estudiante estudiante) {
+        this.entityManager.merge(estudiante);
+    }
+
+    @Override
+    public void borrarPorId(Integer id) {
+        this.entityManager.remove(this.seleccionarPorId(id));
+    }
+
+    @Override
+    public void insertar(Estudiante estudiante) {
+        this.entityManager.persist(estudiante);
     }
 
 }
