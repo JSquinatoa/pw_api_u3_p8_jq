@@ -8,7 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+@XmlRootElement
 @Entity
 @Table(name = "profesor")
 public class Profesor {
@@ -25,6 +28,8 @@ public class Profesor {
     private LocalDateTime fechaNacmimiento;
     @Column(name = "prof_sueldo")
     private Integer sueldo;
+    @Column(name = "prof_genero")
+    private String genero;
 
     public Integer getId() {
         return id;
@@ -50,6 +55,7 @@ public class Profesor {
         this.apellido = apellido;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
     public LocalDateTime getFechaNacmimiento() {
         return fechaNacmimiento;
     }
@@ -64,6 +70,14 @@ public class Profesor {
 
     public void setSueldo(Integer sueldo) {
         this.sueldo = sueldo;
+    }
+
+    public String getGenero() {
+        return genero;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 
 }
