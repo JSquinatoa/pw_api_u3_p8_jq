@@ -1,5 +1,8 @@
 package uce.edu.web.api.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
@@ -14,13 +17,17 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+import uce.edu.web.api.repository.modelo.Hijo;
 import uce.edu.web.api.repository.modelo.Profesor;
 import uce.edu.web.api.service.IProfesorService;
+import uce.edu.web.api.service.to.ProfesorTo;
 
 @Path("/profesores")
-public class ProfesorController {
+public class ProfesorController extends BaseControlador {
 
     @Inject
     private IProfesorService iProfesorService;
@@ -29,8 +36,9 @@ public class ProfesorController {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Consultar un Profesor por id", description = "Esta capacidad permite consultar un profesor por el id")
-    public Response consultarPorId(@PathParam("id") Integer id) {
-        return Response.status(200).entity(this.iProfesorService.buscarPorId(id)).build();
+    public Response consultarPorId(@PathParam("id") Integer id, @Context UriInfo uriInfo) {
+        ProfesorTo prof = this.iProfesorService.buscarPorId(id, uriInfo);
+        return Response.status(200).entity(prof).build();
     }
 
     @GET
@@ -48,7 +56,7 @@ public class ProfesorController {
     @Operation(summary = "Guardar un Profesor", description = "Esta capacidad permite guardar un profesor en la base de datos")
     public Response guardar(@RequestBody Profesor profesor) {
         this.iProfesorService.guardar(profesor);
-        return Response.status(200).build(); 
+        return Response.status(200).build();
     }
 
     @PUT
@@ -58,41 +66,63 @@ public class ProfesorController {
     public Response actualizar(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
         profesor.setId(id);
         this.iProfesorService.actualizarPorId(profesor);
-        return Response.status(200).build(); 
+        return Response.status(200).build();
     }
 
-    @PATCH
-    @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Actulizar un Profesor Parcialmente segun su id", description = "Esta capacidad permite actualizar un profesor parcialmente por su id")
-    public Response actualizarParcialPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
-        profesor.setId(id);
-        Profesor p = this.iProfesorService.buscarPorId(id);
-        if (profesor.getApellido() != null) {
-            p.setApellido(profesor.getApellido());
-        }
-        if (profesor.getFechaNacmimiento() != null) {
-            p.setFechaNacmimiento(profesor.getFechaNacmimiento());
-        }
-        if (profesor.getNombre() != null) {
-            p.setNombre(profesor.getNombre());
-        }
-        if (profesor.getSueldo() != null) {
-            p.setSueldo(profesor.getSueldo());
-        }
-        if (profesor.getGenero() != null) {
-            p.setGenero(profesor.getGenero());            
-        }
-        this.iProfesorService.actualizarParcialPorId(p);
-        return Response.status(200).build(); 
-    }
+    /*
+     * @PATCH
+     * 
+     * @Path("/{id}")
+     * 
+     * @Consumes(MediaType.APPLICATION_JSON)
+     * 
+     * @Operation(summary = "Actulizar un Profesor Parcialmente segun su id",
+     * description =
+     * "Esta capacidad permite actualizar un profesor parcialmente por su id")
+     * public Response actualizarParcialPorId(@RequestBody Profesor
+     * profesor, @PathParam("id") Integer id) {
+     * profesor.setId(id);
+     * Profesor p = this.iProfesorService.buscarPorId(id);
+     * if (profesor.getApellido() != null) {
+     * p.setApellido(profesor.getApellido());
+     * }
+     * if (profesor.getFechaNacmimiento() != null) {
+     * p.setFechaNacmimiento(profesor.getFechaNacmimiento());
+     * }
+     * if (profesor.getNombre() != null) {
+     * p.setNombre(profesor.getNombre());
+     * }
+     * if (profesor.getSueldo() != null) {
+     * p.setSueldo(profesor.getSueldo());
+     * }
+     * if (profesor.getGenero() != null) {
+     * p.setGenero(profesor.getGenero());
+     * }
+     * this.iProfesorService.actualizarParcialPorId(p);
+     * return Response.status(200).build();
+     * }
+     */
 
     @DELETE
     @Path("{id}")
     @Operation(summary = "Borrar un Profesor por Id", description = "Esta capacidad permite borrar un profesor por el id")
     public Response borrarPorId(@PathParam("id") Integer id) {
         this.iProfesorService.borrarPorId(id);
-        return Response.status(200).build(); 
+        return Response.status(200).build();
+    }
+
+    @GET
+    @Path("/{id}/hijos")
+    public List<Hijo> obtenerHijosPorId(@PathParam("id") Integer id) {
+        Hijo h1 = new Hijo();
+        h1.setNombre("John");
+        Hijo h2 = new Hijo();
+        h2.setNombre("Steven");
+
+        List<Hijo> listHijos = new ArrayList<>();
+        listHijos.add(h1);
+        listHijos.add(h2);
+        return listHijos;
     }
 
 }
