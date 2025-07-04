@@ -1,7 +1,5 @@
 package uce.edu.web.api.controller;
 
-import java.util.List;
-
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
@@ -48,24 +46,26 @@ public class ProfesorController {
     @Path("")
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Guardar un Profesor", description = "Esta capacidad permite guardar un profesor en la base de datos")
-    public void guardar(@RequestBody Profesor profesor) {
+    public Response guardar(@RequestBody Profesor profesor) {
         this.iProfesorService.guardar(profesor);
+        return Response.status(200).build(); 
     }
 
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Actulizar un Profesor segun su id", description = "Esta capacidad permite actualizar un profesor por su id completamente")
-    public void actualizar(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
+    public Response actualizar(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
         profesor.setId(id);
         this.iProfesorService.actualizarPorId(profesor);
+        return Response.status(200).build(); 
     }
 
     @PATCH
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Actulizar un Profesor Parcialmente segun su id", description = "Esta capacidad permite actualizar un profesor parcialmente por su id")
-    public void actualizarParcialPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
+    public Response actualizarParcialPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
         profesor.setId(id);
         Profesor p = this.iProfesorService.buscarPorId(id);
         if (profesor.getApellido() != null) {
@@ -84,13 +84,15 @@ public class ProfesorController {
             p.setGenero(profesor.getGenero());            
         }
         this.iProfesorService.actualizarParcialPorId(p);
+        return Response.status(200).build(); 
     }
 
     @DELETE
     @Path("{id}")
     @Operation(summary = "Borrar un Profesor por Id", description = "Esta capacidad permite borrar un profesor por el id")
-    public void borrarPorId(@PathParam("id") Integer id) {
+    public Response borrarPorId(@PathParam("id") Integer id) {
         this.iProfesorService.borrarPorId(id);
+        return Response.status(200).build(); 
     }
 
 }
