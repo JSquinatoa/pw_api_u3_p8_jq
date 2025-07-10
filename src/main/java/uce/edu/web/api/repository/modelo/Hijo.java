@@ -2,8 +2,11 @@ package uce.edu.web.api.repository.modelo;
 
 import org.hibernate.annotations.ManyToAny;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -24,10 +27,10 @@ public class Hijo {
     private String apellido;
 
     // Relaciones
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hijo_estudiante")
     private Estudiante estudiante;
-
 
     // GET y SET 
     public Integer getId() {
@@ -52,6 +55,14 @@ public class Hijo {
 
     public void setApellido(String apellido) {
         this.apellido = apellido;
+    }
+
+    public Estudiante getEstudiante() {
+        return estudiante;
+    }
+
+    public void setEstudiante(Estudiante estudiante) {
+        this.estudiante = estudiante;
     }
 
 }

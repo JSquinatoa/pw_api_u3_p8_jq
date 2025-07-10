@@ -25,6 +25,7 @@ import uce.edu.web.api.repository.modelo.Estudiante;
 import uce.edu.web.api.repository.modelo.Hijo;
 import uce.edu.web.api.service.IEstudianteService;
 import uce.edu.web.api.service.IHijoService;
+import uce.edu.web.api.service.mapper.EstudianteMapper;
 import uce.edu.web.api.service.to.EstudianteTo;
 
 @Path("/estudiantes")
@@ -40,16 +41,16 @@ public class EstudianteController {
 
     @GET
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Consultar un Estudiante", description = "Este capacidad consulta un estudiante por id")
     public Response consultarPorId(@PathParam("id") Integer id, @Context UriInfo uriInfo) {
-        EstudianteTo estu = this.estudianteService.buscarPorId(id, uriInfo);
+
+        EstudianteTo estu = EstudianteMapper.toTo(this.estudianteService.buscarPorId(id));
+        estu.buildURI(uriInfo);
         return Response.status(227).entity(estu).build();
     }
 
     @GET
     @Path("")
-
     @Operation(summary = "Consultar Todos los estudiantes", description = "Este capacidad permite consulta todos los estudiantes")
     public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
         System.out.println(provincia);
@@ -59,7 +60,6 @@ public class EstudianteController {
 
     @POST
     @Path("")
-
     @Operation(summary = "Guardar Estudiante", description = "Esta capacidad permite guardar un estudiante en la base")
     public Response guardar(@RequestBody Estudiante estudiante) {
         this.estudianteService.guardar(estudiante);
@@ -68,34 +68,39 @@ public class EstudianteController {
 
     @PUT
     @Path("/{id}")
-
     @Operation(summary = "Actualizar un Estudiante por Id", description = "Esta capacidad permite actulizar un estudiante por Id")
     public Response actualizar(@RequestBody Estudiante estudiante, @PathParam("id") Integer id) {
-        ;
+    
         estudiante.setId(id);
         this.estudianteService.actualizarPorId(estudiante);
         return Response.status(200).build();
     }
 
-/*     @PATCH
-    @Path("/{id}")
-
-    @Operation(summary = "Actualizar un Estudiante Parcialmente por Id", description = "Esta capacidad permite actulizar un estudiante Parcialmente por Id")
-    public Response actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id) {
-        estudiante.setId(id);
-        Estudiante e = this.estudianteService.buscarPorId(id);
-        if (estudiante.getApellido() != null) {
-            e.setApellido(estudiante.getApellido());
-        }
-        if (estudiante.getNombre() != null) {
-            e.setNombre(estudiante.getNombre());
-        }
-        if (estudiante.getFechaNacimiento() != null) {
-            e.setFechaNacimiento(estudiante.getFechaNacimiento());
-        }
-        this.estudianteService.actualizarParcialPorId(e);
-        return Response.status(200).build();
-    } */
+    /*
+     * @PATCH
+     * 
+     * @Path("/{id}")
+     * 
+     * @Operation(summary = "Actualizar un Estudiante Parcialmente por Id",
+     * description =
+     * "Esta capacidad permite actulizar un estudiante Parcialmente por Id")
+     * public Response actualizarParcialPorId(@RequestBody Estudiante
+     * estudiante, @PathParam("id") Integer id) {
+     * estudiante.setId(id);
+     * Estudiante e = this.estudianteService.buscarPorId(id);
+     * if (estudiante.getApellido() != null) {
+     * e.setApellido(estudiante.getApellido());
+     * }
+     * if (estudiante.getNombre() != null) {
+     * e.setNombre(estudiante.getNombre());
+     * }
+     * if (estudiante.getFechaNacimiento() != null) {
+     * e.setFechaNacimiento(estudiante.getFechaNacimiento());
+     * }
+     * this.estudianteService.actualizarParcialPorId(e);
+     * return Response.status(200).build();
+     * }
+     */
 
     @DELETE
     @Path("{id}")
