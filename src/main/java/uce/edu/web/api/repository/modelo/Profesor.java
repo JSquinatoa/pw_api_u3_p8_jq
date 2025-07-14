@@ -1,12 +1,14 @@
 package uce.edu.web.api.repository.modelo;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -31,6 +33,11 @@ public class Profesor {
     @Column(name = "prof_genero")
     private String genero;
 
+    // Relaciones
+    @OneToMany(mappedBy = "profesor")
+    private List<HijoProfesor> hijosProfesor;
+
+    // GET y SET 
     public Integer getId() {
         return id;
     }

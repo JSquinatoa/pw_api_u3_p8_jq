@@ -68,7 +68,6 @@ public class EstudianteTo {
     public void buildURI(UriInfo uriInfo) {
         URI todosHijos = uriInfo.getBaseUriBuilder().path(EstudianteController.class)
                 .path(EstudianteController.class, "obtenerHijosPorId").build(id);
-                
         _links.put("hijos", todosHijos.toString());
     }
 

@@ -17,18 +17,7 @@ public class ProfesorTo {
     private String genero;
     public Map<String, String> _links = new HashMap<>();
 
-    public ProfesorTo(Integer id, String nombre, String apellido, LocalDateTime fechaNacmimiento, Integer sueldo,
-            String genero, UriInfo uriInfo) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.fechaNacmimiento = fechaNacmimiento;
-        this.sueldo = sueldo;
-        this.genero = genero;
-        URI todosHijos = uriInfo.getBaseUriBuilder().path(ProfesorController.class)
-                .path(ProfesorController.class, "obtenerHijosPorId").build(id);
-        _links.put("hijos", todosHijos.toString());
-    }
+    // GET y SET
 
     public Integer getId() {
         return id;
@@ -76,6 +65,20 @@ public class ProfesorTo {
 
     public void setGenero(String genero) {
         this.genero = genero;
+    }
+
+    public Map<String, String> get_links() {
+        return _links;
+    }
+
+    public void set_links(Map<String, String> _links) {
+        this._links = _links;
+    }
+
+    public void buildURI(UriInfo uriInfo) {
+        URI todosHijos = uriInfo.getBaseUriBuilder().path(ProfesorController.class)
+                .path(ProfesorController.class, "obtenerHijosPorId").build(id);
+        _links.put("hijosProfesor", todosHijos.toString());
     }
 
 }

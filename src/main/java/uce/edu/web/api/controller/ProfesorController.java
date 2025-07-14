@@ -1,6 +1,5 @@
 package uce.edu.web.api.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -21,87 +20,82 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import uce.edu.web.api.repository.modelo.Hijo;
-import uce.edu.web.api.repository.modelo.Profesor;
+import uce.edu.web.api.service.IHijoProfesorService;
 import uce.edu.web.api.service.IProfesorService;
+import uce.edu.web.api.service.mapper.HijoProfesorMapper;
+import uce.edu.web.api.service.mapper.ProfesorMapper;
+import uce.edu.web.api.service.to.HijoProfesorTo;
 import uce.edu.web.api.service.to.ProfesorTo;
 
 @Path("/profesores")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class ProfesorController {
 
     @Inject
     private IProfesorService iProfesorService;
 
+    @Inject
+    private IHijoProfesorService iHijoProfesorService;
+
     @GET
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Consultar un Profesor por id", description = "Esta capacidad permite consultar un profesor por el id")
     public Response consultarPorId(@PathParam("id") Integer id, @Context UriInfo uriInfo) {
-        ProfesorTo prof = this.iProfesorService.buscarPorId(id, uriInfo);
-        return Response.status(200).entity(prof).build();
+        ProfesorTo profTo = ProfesorMapper.toTo(this.iProfesorService.buscarPorId(id));
+        profTo.buildURI(uriInfo);
+        return Response.status(200).entity(profTo).build();
     }
 
     @GET
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Consultar todos los profesores por su genero", description = "Esta capacidad permite consultar todos los profesors por el genero")
     public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
-        System.out.println(provincia);
-        return Response.ok(200).entity(this.iProfesorService.buscarTodos(genero)).build();
+        List<ProfesorTo> profToList = ProfesorMapper.toToList(this.iProfesorService.buscarTodos(genero));
+        return Response.ok(200).entity(profToList).build();
     }
 
     @POST
     @Path("")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Guardar un Profesor", description = "Esta capacidad permite guardar un profesor en la base de datos")
-    public Response guardar(@RequestBody Profesor profesor) {
-        this.iProfesorService.guardar(profesor);
+    public Response guardar(@RequestBody ProfesorTo profesorTo) {
+        this.iProfesorService.guardar(ProfesorMapper.toEntity(profesorTo));
         return Response.status(200).build();
     }
 
     @PUT
     @Path("{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Actulizar un Profesor segun su id", description = "Esta capacidad permite actualizar un profesor por su id completamente")
-    public Response actualizar(@RequestBody Profesor profesor, @PathParam("id") Integer id) {
-        profesor.setId(id);
-        this.iProfesorService.actualizarPorId(profesor);
+    public Response actualizar(@RequestBody ProfesorTo profesorTo, @PathParam("id") Integer id) {
+        profesorTo.setId(id);
+        this.iProfesorService.actualizarPorId(ProfesorMapper.toEntity(profesorTo));
         return Response.status(200).build();
     }
 
-    /*
-     * @PATCH
-     * 
-     * @Path("/{id}")
-     * 
-     * @Consumes(MediaType.APPLICATION_JSON)
-     * 
-     * @Operation(summary = "Actulizar un Profesor Parcialmente segun su id",
-     * description =
-     * "Esta capacidad permite actualizar un profesor parcialmente por su id")
-     * public Response actualizarParcialPorId(@RequestBody Profesor
-     * profesor, @PathParam("id") Integer id) {
-     * profesor.setId(id);
-     * Profesor p = this.iProfesorService.buscarPorId(id);
-     * if (profesor.getApellido() != null) {
-     * p.setApellido(profesor.getApellido());
-     * }
-     * if (profesor.getFechaNacmimiento() != null) {
-     * p.setFechaNacmimiento(profesor.getFechaNacmimiento());
-     * }
-     * if (profesor.getNombre() != null) {
-     * p.setNombre(profesor.getNombre());
-     * }
-     * if (profesor.getSueldo() != null) {
-     * p.setSueldo(profesor.getSueldo());
-     * }
-     * if (profesor.getGenero() != null) {
-     * p.setGenero(profesor.getGenero());
-     * }
-     * this.iProfesorService.actualizarParcialPorId(p);
-     * return Response.status(200).build();
-     * }
-     */
+    @PATCH
+    @Path("/{id}")
+    @Operation(summary = "Actulizar un Profesor Parcialmente segun su id", description = "Esta capacidad permite actualizar un profesor parcialmente por su id")
+    public Response actualizarParcialPorId(@RequestBody ProfesorTo profesorTo, @PathParam("id") Integer id) {
+        profesorTo.setId(id);
+        ProfesorTo pTo = ProfesorMapper.toTo(this.iProfesorService.buscarPorId(id));
+        if (profesorTo.getNombre() != null) {
+            pTo.setNombre(profesorTo.getNombre());
+        }
+        if (profesorTo.getApellido() != null) {
+            pTo.setApellido(profesorTo.getApellido());
+        }
+        if (profesorTo.getFechaNacmimiento() != null) {
+            pTo.setFechaNacmimiento(profesorTo.getFechaNacmimiento());
+        }
+        if (profesorTo.getSueldo() != null) {
+            pTo.setSueldo(profesorTo.getSueldo());
+        }
+        if (profesorTo.getGenero() != null) {
+            pTo.setGenero(profesorTo.getGenero());
+        }
+        this.iProfesorService.actualizarParcialPorId(ProfesorMapper.toEntity(pTo));
+        return Response.status(200).build();
+    }
 
     @DELETE
     @Path("{id}")
@@ -113,16 +107,10 @@ public class ProfesorController {
 
     @GET
     @Path("/{id}/hijos")
-    public List<Hijo> obtenerHijosPorId(@PathParam("id") Integer id) {
-        Hijo h1 = new Hijo();
-        h1.setNombre("John");
-        Hijo h2 = new Hijo();
-        h2.setNombre("Steven");
-
-        List<Hijo> listHijos = new ArrayList<>();
-        listHijos.add(h1);
-        listHijos.add(h2);
-        return listHijos;
+    public Response obtenerHijosPorId(@PathParam("id") Integer id) {
+        List<HijoProfesorTo> hijoProfesorToList = HijoProfesorMapper
+                .toToList(this.iHijoProfesorService.BuscarPorEstudianteId(id));
+        return Response.status(Response.Status.OK).entity(hijoProfesorToList).build();
     }
 
 }
