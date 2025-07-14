@@ -1,7 +1,5 @@
 package uce.edu.web.api.repository.modelo;
 
-import org.hibernate.annotations.ManyToAny;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
