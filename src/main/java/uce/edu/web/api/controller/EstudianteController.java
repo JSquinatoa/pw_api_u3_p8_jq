@@ -50,8 +50,11 @@ public class EstudianteController {
     @GET
     @Path("")
     @Operation(summary = "Consultar Todos los estudiantes", description = "Este capacidad permite consulta todos los estudiantes")
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia, @Context UriInfo uriInfo) {
         List<EstudianteTo> estuToList = EstudianteMapper.toToList(this.estudianteService.buscarTodos(genero));
+        for (EstudianteTo estuTo : estuToList) {
+            estuTo.buildURI(uriInfo);            
+        }
         return Response.status(Response.Status.OK).entity(estuToList).build();
     }
 

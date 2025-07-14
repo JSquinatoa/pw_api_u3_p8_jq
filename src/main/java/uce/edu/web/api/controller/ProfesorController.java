@@ -50,8 +50,11 @@ public class ProfesorController {
     @GET
     @Path("")
     @Operation(summary = "Consultar todos los profesores por su genero", description = "Esta capacidad permite consultar todos los profesors por el genero")
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia, @Context UriInfo uriInfo) {
         List<ProfesorTo> profToList = ProfesorMapper.toToList(this.iProfesorService.buscarTodos(genero));
+        for (ProfesorTo profTo : profToList) {
+            profTo.buildURI(uriInfo);            
+        }
         return Response.ok(200).entity(profToList).build();
     }
 
