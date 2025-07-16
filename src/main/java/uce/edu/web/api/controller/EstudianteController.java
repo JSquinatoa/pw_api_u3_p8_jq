@@ -1,6 +1,7 @@
 package uce.edu.web.api.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -52,6 +53,7 @@ public class EstudianteController {
     @Operation(summary = "Consultar Todos los estudiantes", description = "Este capacidad permite consulta todos los estudiantes")
     public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia, @Context UriInfo uriInfo) {
         List<EstudianteTo> estuToList = EstudianteMapper.toToList(this.estudianteService.buscarTodos(genero));
+        /* List<EstudianteTo> estudianteTos = this.estudianteService.buscarTodos(genero).stream().map(EstudianteMapper::toTo).collect(Collectors.toList()); */
         for (EstudianteTo estuTo : estuToList) {
             estuTo.buildURI(uriInfo);            
         }
