@@ -1,11 +1,14 @@
 package uce.edu.web.api.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.ClaimValue;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -34,6 +37,13 @@ import uce.edu.web.api.service.to.HijoTo;
 public class EstudianteController {
 
     @Inject
+    JsonWebToken jwt;
+
+    @Inject
+    @Claim("sub")
+    ClaimValue<String> subject;
+
+    @Inject
     private IEstudianteService estudianteService;
 
     @Inject
@@ -41,7 +51,8 @@ public class EstudianteController {
 
     @GET
     @Path("/{id}")
-    @Operation(summary = "Consultar un Estudiante", description = "Este capacidad consulta un estudiante por id")
+    @RolesAllowed("admin")
+    @Operation(summary = "Consultar un Estudiante por ID", description = "Este capacidad consulta un estudiante por id")
     public Response consultarPorId(@PathParam("id") Integer id, @Context UriInfo uriInfo) {
         EstudianteTo estuTo = EstudianteMapper.toTo(this.estudianteService.buscarPorId(id));
         estuTo.buildURI(uriInfo);
@@ -51,11 +62,16 @@ public class EstudianteController {
     @GET
     @Path("")
     @Operation(summary = "Consultar Todos los estudiantes", description = "Este capacidad permite consulta todos los estudiantes")
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia, @Context UriInfo uriInfo) {
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia,
+            @Context UriInfo uriInfo) {
         List<EstudianteTo> estuToList = EstudianteMapper.toToList(this.estudianteService.buscarTodos(genero));
-        /* List<EstudianteTo> estudianteTos = this.estudianteService.buscarTodos(genero).stream().map(EstudianteMapper::toTo).collect(Collectors.toList()); */
+        /*
+         * List<EstudianteTo> estudianteTos =
+         * this.estudianteService.buscarTodos(genero).stream().map(EstudianteMapper::
+         * toTo).collect(Collectors.toList());
+         */
         for (EstudianteTo estuTo : estuToList) {
-            estuTo.buildURI(uriInfo);            
+            estuTo.buildURI(uriInfo);
         }
         return Response.status(Response.Status.OK).entity(estuToList).build();
     }
@@ -93,7 +109,7 @@ public class EstudianteController {
             eTo.setFechaNacimiento(estudiantetTo.getFechaNacimiento());
         }
         if (estudiantetTo.getGenero() != null) {
-            eTo.setGenero(estudiantetTo.getGenero());            
+            eTo.setGenero(estudiantetTo.getGenero());
         }
         this.estudianteService.actualizarParcialPorId(EstudianteMapper.toEntity(eTo));
         return Response.status(200).build();
