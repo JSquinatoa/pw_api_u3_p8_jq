@@ -7,7 +7,9 @@ import uce.edu.web.api.repository.modelo.Estudiante;
 public interface IEstudianteService {
     public Estudiante buscarPorId(Integer id);
 
-    public List<Estudiante> buscarTodos(String genero);
+    public List<Estudiante> buscarTodosPorGenero(String genero);
+
+    public List<Estudiante> buscarTodos();
 
     public void actualizarPorId(Estudiante estudiante);
 

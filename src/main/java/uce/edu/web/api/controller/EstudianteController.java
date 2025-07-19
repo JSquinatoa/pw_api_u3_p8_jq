@@ -1,6 +1,7 @@
 package uce.edu.web.api.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.ClaimValue;
@@ -60,11 +61,12 @@ public class EstudianteController {
     }
 
     @GET
-    @Path("")
-    @Operation(summary = "Consultar Todos los estudiantes", description = "Este capacidad permite consulta todos los estudiantes")
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia,
+    @Path("/genero")
+    @Operation(summary = "Consultar Todos los estudiantes por genero", description = "Este capacidad permite consulta todos los estudiantes por genero")
+    public Response consultarTodosPorGenero(@QueryParam("genero") String genero,
+            @QueryParam("provincia") String provincia,
             @Context UriInfo uriInfo) {
-        List<EstudianteTo> estuToList = EstudianteMapper.toToList(this.estudianteService.buscarTodos(genero));
+        List<EstudianteTo> estuToList = EstudianteMapper.toToList(this.estudianteService.buscarTodosPorGenero(genero));
         /*
          * List<EstudianteTo> estudianteTos =
          * this.estudianteService.buscarTodos(genero).stream().map(EstudianteMapper::
@@ -73,6 +75,14 @@ public class EstudianteController {
         for (EstudianteTo estuTo : estuToList) {
             estuTo.buildURI(uriInfo);
         }
+        return Response.status(Response.Status.OK).entity(estuToList).build();
+    }
+
+    @GET
+    @Path("")
+    public Response consultarTodos(@Context UriInfo uriInfo) {
+        List<EstudianteTo> estuToList = this.estudianteService.buscarTodos().stream().map(EstudianteMapper::toTo)
+                .peek(estuTo -> estuTo.buildURI(uriInfo)).collect(Collectors.toList());
         return Response.status(Response.Status.OK).entity(estuToList).build();
     }
 
